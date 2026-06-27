@@ -45,8 +45,9 @@ class ProfileIntegrationTest < SolidLensIntegrationCase
 
   def test_runner_profile_reports_backlog_growth_and_profile_findings
     writer = Thread.new do
-      sleep 0.05
+      sleep 0.02
       SolidQueue::Record.connection_pool.with_connection do
+        create_stale_claimed_execution(last_heartbeat_at: 6.minutes.ago)
         create_ready_execution(queue_name: "critical", created_at: 5.seconds.ago)
         create_ready_execution(queue_name: "critical", created_at: 5.seconds.ago)
         create_scheduled_execution(queue_name: "mailers", scheduled_at: 2.minutes.ago)
@@ -67,11 +68,10 @@ class ProfileIntegrationTest < SolidLensIntegrationCase
           expires_at: 2.minutes.ago,
           created_at: 5.minutes.ago
         )
-        create_stale_claimed_execution(last_heartbeat_at: 6.minutes.ago)
       end
     end
 
-    report = SolidLens::Runner.new.profile(duration: 0.15, sample_interval: 0.05)
+    report = SolidLens::Runner.new.profile(duration: 0.3, sample_interval: 0.05)
     writer.join
 
     profile = report.evidence.fetch(:profile)
