@@ -27,7 +27,7 @@ class MariaDbIntegrationTest < Minitest::Test
 
     assert_equal true, report.dig("evidence", "database", "connected")
     assert_equal "Trilogy", report.dig("evidence", "database", "adapter_name")
-    assert_includes report.dig("evidence", "database", "database_version").downcase, "mariadb"
+    assert_equal "mariadb", report.dig("evidence", "database", "database_flavor")
     assert_equal true, report.dig("evidence", "database", "skip_locked_supported")
     assert report.fetch("findings").any? { |finding| finding.fetch("id") == "solid_queue.pool.undersized" }
 

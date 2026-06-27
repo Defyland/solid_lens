@@ -33,12 +33,18 @@ module SolidLens
       def base_evidence(connection)
         return {connected: false, error: "ActiveRecord connection unavailable"} unless connection
 
+        adapter_name = connection.adapter_name.to_s
+        version = database_version(connection)
+        server_identity = database_server_identity(connection, adapter_name)
+
         {
           connected: connected?(connection),
-          adapter_name: connection.adapter_name,
-          database_version: database_version(connection),
+          adapter_name: adapter_name,
+          database_version: version,
+          database_flavor: database_flavor(adapter_name, version, server_identity),
+          database_server_identity: server_identity,
           connection_pool_size: connection.pool.size
-        }
+        }.compact
       end
 
       def database_version(connection)
@@ -53,12 +59,30 @@ module SolidLens
         "unknown: #{error.class}: #{error.message}"
       end
 
+      def database_server_identity(connection, adapter_name)
+        return unless adapter_name.downcase.match?(/mysql|trilogy/)
+
+        [connection.select_value("SELECT @@version"), connection.select_value("SELECT @@version_comment")].compact.join(" ")
+      rescue
+        nil
+      end
+
+      def database_flavor(adapter_name, version, server_identity)
+        identity = [adapter_name, version, server_identity].compact.join(" ").downcase
+
+        return "postgresql" if identity.include?("postgres")
+        return "sqlite" if identity.include?("sqlite")
+        return "mariadb" if identity.include?("mariadb")
+        "mysql" if identity.match?(/mysql|trilogy/)
+      end
+
       def skip_locked_supported?(evidence)
         adapter = evidence[:adapter_name].to_s.downcase
         version = evidence[:database_version].to_s
+        flavor = evidence[:database_flavor].to_s
 
         return version_at_least?(version, 9, 5) if adapter.include?("postgres")
-        return version_at_least?(version, 10, 6) if version.downcase.include?("mariadb")
+        return version_at_least?(version, 10, 6) if flavor == "mariadb"
         return version_at_least?(version, 8, 0) if adapter.match?(/mysql|trilogy/)
         return false if adapter.include?("sqlite")
 
