@@ -179,7 +179,8 @@ bundle exec ruby -Itest test/solid_lens/command_surface_integration_test.rb
 bundle exec ruby -Itest test/solid_lens/postgres_integration_test.rb
 bundle exec ruby -Itest test/solid_lens/mariadb_integration_test.rb
 bundle exec rake build
-gem contents pkg/solid_lens-0.1.0.gem
+gem specification pkg/solid_lens-0.1.0.gem --ruby
+tar -xOf pkg/solid_lens-0.1.0.gem data.tar.gz | tar -tzf -
 ```
 
 The default `bundle exec rake` gate runs the SQLite-backed test suite and Standard Ruby. PostgreSQL and MariaDB integration tests need either their CI service containers or local databases exposed through `SOLID_LENS_TEST_DATABASE_URL` and `SOLID_LENS_TEST_MARIADB_DATABASE_URL`.
