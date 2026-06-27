@@ -1,0 +1,21 @@
+default: &default
+  <% if (database_url = ENV["SOLID_LENS_TEST_DATABASE_URL"]).to_s.empty? %>
+  adapter: sqlite3
+  database: <%= File.expand_path("../tmp/solid_lens_integration.sqlite3", __dir__) %>
+  timeout: 5000
+  <% else %>
+  url: <%= database_url %>
+  <% end %>
+  pool: <%= ENV.fetch("SOLID_LENS_TEST_DB_POOL", 5) %>
+
+development:
+  primary:
+    <<: *default
+
+test:
+  primary:
+    <<: *default
+
+production:
+  primary:
+    <<: *default

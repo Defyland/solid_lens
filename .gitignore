@@ -1,0 +1,11 @@
+/.bundle/
+/.yardoc
+/_yardoc/
+/coverage/
+/doc/
+/pkg/
+/tmp/
+/test/support/**/tmp/
+/test/support/**/*.sqlite3
+/vendor/bundle
+.DS_Store

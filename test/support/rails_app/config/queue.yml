@@ -1,0 +1,15 @@
+test:
+  dispatchers:
+    - polling_interval: 1
+      batch_size: 250
+      concurrency_maintenance_interval: 600
+  workers:
+    - queues:
+        - default
+        - mailers*
+      threads: 4
+      processes: 2
+      polling_interval: 0.2
+  scheduler:
+    polling_interval: 5
+    dynamic_tasks_enabled: true

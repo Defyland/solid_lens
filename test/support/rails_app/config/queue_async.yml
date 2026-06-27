@@ -1,0 +1,11 @@
+test:
+  dispatchers:
+    - polling_interval: 1
+      batch_size: 250
+      concurrency_maintenance_interval: 600
+  workers:
+    - queues:
+        - default
+      threads: 2
+      processes: 3
+      polling_interval: 0.1
