@@ -15,6 +15,8 @@ Gem::Specification.new do |spec|
 
   spec.metadata = {
     "allowed_push_host" => "https://rubygems.org",
+    "bug_tracker_uri" => "#{spec.homepage}/issues",
+    "documentation_uri" => "#{spec.homepage}#readme",
     "homepage_uri" => spec.homepage,
     "source_code_uri" => spec.homepage,
     "changelog_uri" => "#{spec.homepage}/blob/main/CHANGELOG.md",
@@ -22,7 +24,9 @@ Gem::Specification.new do |spec|
   }
 
   spec.files = Dir.chdir(__dir__) do
-    Dir["lib/**/*", "exe/*", "docs/specs/*.md", "README.md", "CHANGELOG.md", "LICENSE.txt"]
+    Dir["lib/**/*", "exe/*", "docs/specs/*.md", "docs/contract-versioning.md", "README.md", "CHANGELOG.md", "LICENSE.txt"].reject do |file|
+      file.start_with?("lib/solid_lens/package_audit")
+    end
   end
   spec.bindir = "exe"
   spec.executables = ["solid_lens"]

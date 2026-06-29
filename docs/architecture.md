@@ -93,6 +93,29 @@ The check contract is:
 
 Exit behavior is deliberately conservative: commands exit zero by default and only return non-zero when `--fail-on-high` is explicitly requested and high or critical findings exist.
 
+## Contract Boundary
+
+The public contract is larger than the Ruby classes alone:
+
+- command names: `doctor`, `profile`, and `explain`;
+- stable finding ids;
+- the JSON report shape;
+- the packaged product-direction note in `docs/specs/product-direction.md`.
+
+`docs/contract-versioning.md` defines when those surfaces can change without a
+major release.
+
+## Packaging Boundary
+
+`SolidLens::PackageAudit` verifies that the built gem:
+
+- ships the README, product-direction note, and contract-versioning note;
+- keeps public docs free of absolute local paths;
+- can be consumed from Bundler as packaged gem contents instead of falling back
+  to the checkout;
+- executes both the standalone CLI and the Rails command inside a disposable
+  Rails host app.
+
 ## Adapter Boundary
 
 SolidLens supports adapter-specific evidence where the database meaning is different:

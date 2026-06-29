@@ -224,3 +224,45 @@ Verification evidence:
 - `test/solid_lens/explain_plan_analyzer_test.rb`.
 - `test/solid_lens/postgres_integration_test.rb`.
 - `test/solid_lens/mariadb_integration_test.rb`.
+
+## 2026-06-29 - Treat The Packaged Command Surface As A Release Contract
+
+Context: SolidLens already had strong checkout-based tests, but a public gem can
+still fail after packaging if the built artifact drops docs, drifts from the
+public command surface, or only works when the checkout is on disk.
+
+Options considered:
+
+- Rely on checkout tests plus manual `rake build` inspection.
+- Verify only that the top-level gem can be required from the built artifact.
+- Verify the built gem through a disposable Rails host app that exercises both
+  the standalone CLI and the Rails command.
+
+Choice: Verify the built gem through a disposable Rails host app.
+
+Pros:
+
+- Release confidence no longer depends on the checkout being present.
+- The packaged gem proves both public execution surfaces, not only `require`.
+- Public docs become part of the enforced release contract.
+- Reviewers get a small, reproducible package-truth check.
+
+Cons:
+
+- Package verification adds extra runtime to CI and local release checks.
+- The host-app smoke path needs maintenance when public command contracts
+  intentionally change.
+
+Consequences:
+
+- `docs/contract-versioning.md` is shipped inside the gem.
+- `package:verify` becomes the canonical package-truth gate.
+- Public command changes must update the host-app smoke expectations
+  intentionally.
+
+Verification evidence:
+
+- `lib/solid_lens/package_audit.rb`.
+- `lib/solid_lens/package_audit/host_app_smoke.rb`.
+- `test/solid_lens/packaging_test.rb`.
+- `bundle exec rake package:verify`.

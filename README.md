@@ -168,6 +168,22 @@ The implementation follows:
 - `SolidLens::Reporters`: render Markdown or JSON for humans and CI;
 - `SolidLens::Runner`: orchestrates command-specific collection and checks.
 
+## Contract And Versioning
+
+SolidLens has a practical public contract, not just Ruby constants:
+
+- the `doctor`, `profile`, and `explain` command names;
+- stable finding ids such as `solid_queue.pool.undersized`;
+- the JSON report shape with `command`, `summary`, `evidence`, and `findings`;
+- the Rails command and standalone CLI flags that operators use in CI and incidents;
+- the product boundary captured in [`docs/specs/product-direction.md`](docs/specs/product-direction.md).
+
+The versioning policy for those surfaces lives in
+[docs/contract-versioning.md](docs/contract-versioning.md). Release
+verification now builds the gem artifact, validates packaged public docs, and
+boots a disposable Rails app that executes both `bundle exec solid_lens doctor`
+and `bin/rails solid_lens:doctor` from the packaged gem surface.
+
 ## Verification
 
 For a reviewer evaluating this repository locally:
@@ -175,6 +191,7 @@ For a reviewer evaluating this repository locally:
 ```sh
 bundle install
 bundle exec rake
+bundle exec rake package:verify
 bundle exec ruby -Itest test/solid_lens/command_surface_integration_test.rb
 bundle exec ruby -Itest test/solid_lens/postgres_integration_test.rb
 bundle exec ruby -Itest test/solid_lens/mariadb_integration_test.rb
@@ -196,6 +213,29 @@ The default `bundle exec rake` gate runs the SQLite-backed test suite and Standa
 - semaphore-health coverage now verifies real expired semaphore detection and the dispatcher-maintenance lag path against the real Solid Queue schema.
 - explain-plan analysis also has unit coverage for SQLite, PostgreSQL-style JSON plans, and MySQL-style tabular plans.
 - CI now includes dedicated PostgreSQL and MariaDB integration jobs in addition to the default SQLite-backed suite.
+
+## How To Evaluate This Repo
+
+For a fast technical review:
+
+```sh
+bundle exec rake
+bundle exec rake package:verify
+bundle exec ruby -Itest test/solid_lens/command_surface_integration_test.rb
+RUNS=10 ruby bin/benchmark
+```
+
+What those checks prove:
+
+- `bundle exec rake` covers the default SQLite-backed suite plus Standard Ruby.
+- `bundle exec rake package:verify` proves the built gem ships the public docs,
+  can be resolved by Bundler from the packaged artifact, and can execute both
+  the standalone CLI and `bin/rails solid_lens:doctor` inside a disposable Rails
+  app.
+- `command_surface_integration_test.rb` keeps the Rails command, Rake task, and
+  CLI entrypoints aligned on format handling, output behavior, and exit status.
+- `RUNS=10 ruby bin/benchmark` measures the warm-run command overhead after Rails
+  boot so future changes can be evaluated against a concrete baseline.
 
 ## Compatibility
 
