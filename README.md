@@ -258,3 +258,11 @@ The Solid Queue README says new Rails 8 apps configure Solid Queue by default, a
 - It reports database and topology evidence from the environment where it runs. In multi-deployment systems, confirm which deployment owns scheduler and dispatcher work for the shared queue database.
 - PostgreSQL bloat diagnostics use `pg_stat_user_tables`; non-PostgreSQL adapters still get schema, topology, backlog, explain, semaphore, and claimed-execution diagnostics but not dead-tuple evidence.
 - `profile` is a bounded sampling window, not continuous monitoring. Use it to capture causal evidence, then hand sustained alerting to your metrics/APM stack.
+
+## License
+
+This gem is published under the MIT License. See
+[LICENSE.txt](LICENSE.txt).
+
+That keeps the queue diagnostics, packaged docs, and verification notes
+reusable for study and internal experimentation.
