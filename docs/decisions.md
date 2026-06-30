@@ -258,6 +258,52 @@ Consequences:
 - `docs/contract-versioning.md` is shipped inside the gem.
 - `package:verify` becomes the canonical package-truth gate.
 - Public command changes must update the host-app smoke expectations
+
+## 2026-06-29 - Ship Core Review Docs Inside The Built Gem
+
+Context: SolidLens already teaches its product boundary, evidence pipeline, and
+technical tradeoffs well in the repository. A reviewer or future maintainer who
+only inspects the built gem currently loses that architecture and decision
+surface, even though package audit already treats public docs as part of release
+truth.
+
+Options considered:
+
+- Keep review docs only in the Git checkout.
+- Publish the review story only in `README.md`.
+- Ship the core review docs inside the built gem and enforce them in package
+  verification.
+
+Choice: ship `docs/architecture.md` and `docs/decisions.md` alongside the
+already-packaged `docs/specs/product-direction.md` and
+`docs/contract-versioning.md`, and verify that curated review-doc set during
+package audit.
+
+Pros:
+
+- The release artifact teaches the product and architecture story directly.
+- Reviewers can inspect reasoning from the packaged gem, not only from the
+  checkout.
+- Package verification now guards the didactic release surface against drift.
+
+Cons:
+
+- Public docs become a maintained release surface.
+- Packaging changes must now account for documentation presence explicitly.
+
+Consequences:
+
+- `solid_lens.gemspec` must package the curated review docs.
+- `SolidLens::PackageAudit::PUBLIC_DOCS` must fail if those docs disappear or
+  contain local-only links.
+- README evaluation instructions should point reviewers at the packaged-doc
+  expectation directly.
+
+Verification evidence:
+
+- `solid_lens.gemspec`.
+- `lib/solid_lens/package_audit.rb`.
+- `test/solid_lens/packaging_test.rb`.
   intentionally.
 
 Verification evidence:

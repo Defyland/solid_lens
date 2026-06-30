@@ -24,7 +24,17 @@ Gem::Specification.new do |spec|
   }
 
   spec.files = Dir.chdir(__dir__) do
-    Dir["lib/**/*", "exe/*", "docs/specs/*.md", "docs/contract-versioning.md", "README.md", "CHANGELOG.md", "LICENSE.txt"].reject do |file|
+    Dir[
+      "lib/**/*",
+      "exe/*",
+      "docs/specs/*.md",
+      "docs/architecture.md",
+      "docs/contract-versioning.md",
+      "docs/decisions.md",
+      "README.md",
+      "CHANGELOG.md",
+      "LICENSE.txt"
+    ].reject do |file|
       file.start_with?("lib/solid_lens/package_audit")
     end
   end

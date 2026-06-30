@@ -14,7 +14,13 @@ module SolidLens
   module PackageAudit
     class Error < StandardError; end
 
-    PUBLIC_DOCS = %w[README.md docs/contract-versioning.md docs/specs/product-direction.md].freeze
+    PUBLIC_DOCS = %w[
+      README.md
+      docs/architecture.md
+      docs/contract-versioning.md
+      docs/decisions.md
+      docs/specs/product-direction.md
+    ].freeze
     ABSOLUTE_LOCAL_LINK_PATTERN = %r{\(/Users/}
 
     module_function

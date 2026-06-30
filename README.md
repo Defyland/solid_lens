@@ -3,6 +3,9 @@
 SolidLens is a causal diagnostic toolkit for Solid Queue. It is intentionally not a dashboard. The first goal is to explain production failure modes around database-backed job processing: pool pressure, lock support, polling shape, dispatcher lag, claimed jobs, table bloat, and critical query plans.
 
 The current product boundary is locked in [docs/specs/product-direction.md](docs/specs/product-direction.md), and the repo has an executable product-spec test to guard that surface against drift.
+The architecture boundary and technical decision log live in
+[docs/architecture.md](docs/architecture.md) and
+[docs/decisions.md](docs/decisions.md).
 
 ## Problem
 
@@ -196,6 +199,7 @@ bundle exec ruby -Itest test/solid_lens/command_surface_integration_test.rb
 bundle exec ruby -Itest test/solid_lens/postgres_integration_test.rb
 bundle exec ruby -Itest test/solid_lens/mariadb_integration_test.rb
 bundle exec rake build
+ruby -e 'require "rubygems/package"; puts Gem::Package.new(Dir["pkg/solid_lens-*.gem"].fetch(0)).contents.grep(%r{^(README\\.md|docs/(architecture|contract-versioning|decisions|specs/product-direction))})'
 gem specification pkg/solid_lens-0.1.0.gem --ruby
 tar -xOf pkg/solid_lens-0.1.0.gem data.tar.gz | tar -tzf -
 ```
@@ -207,6 +211,11 @@ The default `bundle exec rake` gate runs the SQLite-backed test suite and Standa
 - the integration suite asserts runtime `queue.yml` interpretation, pool findings, stale claimed execution detection, Rails command and Rake task report output, missing-index/schema findings, and CLI Rails auto-bootstrap.
 - PostgreSQL integration coverage boots the fixture app against a real database, reloads the Solid Queue schema, verifies `SKIP LOCKED` support evidence, asserts JSON `EXPLAIN` output, and confirms `profile` emits structured bloat-health evidence from the standalone CLI.
 - MariaDB integration coverage boots the same fixture app against a real database through Trilogy, verifies the MariaDB `SKIP LOCKED` version branch, and asserts MySQL-style `EXPLAIN` output from the standalone CLI.
+- the built gem now includes `docs/architecture.md`,
+  `docs/decisions.md`,
+  `docs/contract-versioning.md`, and
+  `docs/specs/product-direction.md`, so the release artifact carries the core
+  operator/reviewer reasoning instead of leaving it only in the checkout.
 - runtime configuration coverage now also verifies that `async` mode correctly surfaces ignored worker `processes` settings as an actionable finding.
 - profile coverage now verifies real ready/scheduled/recurring backlog growth, recovered spikes, blocked backlog growth, expired semaphore growth, dead claimed execution growth, synthetic bloat spikes in the collector/check pipeline, bounded sample-cardinality behavior, queue peaks, overdue scheduled lag growth, recurring lag growth, and CLI JSON output for the `profile` command.
 - blocked-execution coverage now verifies real expired blocked backlog detection, blocked-job release query explain coverage, and timestamp lag calculations against database-returned timestamps.

@@ -24,7 +24,9 @@ class PackagingTest < Minitest::Test
     assert_equal "https://rubygems.org", spec.metadata.fetch("allowed_push_host")
     assert_equal "#{spec.homepage}/issues", spec.metadata.fetch("bug_tracker_uri")
     assert_equal "#{spec.homepage}#readme", spec.metadata.fetch("documentation_uri")
+    assert_includes spec.files, "docs/architecture.md"
     assert_includes spec.files, "docs/contract-versioning.md"
+    assert_includes spec.files, "docs/decisions.md"
     assert_includes spec.files, "docs/specs/product-direction.md"
   end
 
